@@ -1,0 +1,79 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: stable-diffusion-ui
+spec:
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app: stable-diffusion-ui
+  
+  
+  template:
+    metadata:
+      labels:
+        app: stable-diffusion-ui
+    
+    spec:
+      automountServiceAccountToken: false
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+            - matchExpressions:
+              #- key: topology.kubernetes.io/region
+              #  operator: In
+              #  values:
+              #  - us-central 
+              #- key: topology.kubernetes.io/zone
+              #  operator: In
+              #  values:
+              #  - mghpcc
+              - key: nvidia.com/gpu.product
+                operator: In
+                values:
+                - NVIDIA-A10
+                - NVIDIA-GeForce-RTX-3090
+                - Quadro-RTX-6000
+                - NVIDIA-A100-SXM4-80GB
+                - NVIDIA-A100-PCIE-40GB-MIG-2g.10gb
+                - NVIDIA-RTX-A5000
+                - NVIDIA-RTX-A6000
+                - Quadro-RTX-8000
+              # Require cuda driver version 529 or greater
+              - key: nvidia.com/cuda.runtime.major
+                operator: In
+                values:
+                - "12"
+      containers:
+      - name: stable-diffusion-ui
+        image: gitlab-registry.nrp-nautilus.io/dweitzel/stable-diffusion-webui/auto
+        #command: ["sh", "-c", "echo 'Im a new pod' && sleep infinity"]
+        ports:
+        - containerPort: 7860
+
+        env:
+        - name: CLI_ARGS
+          value: --allow-code --medvram --xformers --enable-insecure-extension-access --api
+        resources:
+          limits:
+            memory: 32Gi
+            cpu: 10
+            nvidia.com/gpu: 1
+          requests:
+            memory: 32Gi
+            cpu: 10
+            nvidia.com/gpu: 1
+        volumeMounts:
+        - mountPath: /data
+          name: stable-diffusion-data
+          subPath: data
+        - mountPath: /output
+          name: stable-diffusion-data
+          subPath: output
+      volumes:
+        - name: stable-diffusion-data
+          persistentVolumeClaim:
+            claimName: stable-diffusion-data-clone

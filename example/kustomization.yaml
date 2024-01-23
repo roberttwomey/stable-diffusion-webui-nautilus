@@ -1,0 +1,24 @@
+
+bases:
+- ../base
+
+# Name prefix for all resources
+# Name it after the user
+namePrefix: example-
+
+# Modify the HTTP URL to the webui
+patchesJSON6902:
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: stable-diffusion-ui
+
+  # In this patch, change the example to whatever web address you want
+  patch: |-
+    - op: replace
+      path: /spec/rules/0/host
+      value: example-stable-diffusion.nrp-nautilus.io
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: example-stable-diffusion.nrp-nautilus.io

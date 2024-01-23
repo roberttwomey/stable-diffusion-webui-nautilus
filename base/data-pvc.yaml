@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: stable-diffusion-data-clone
+spec:
+  storageClassName: rook-ceph-block-central
+  accessModes:
+  - ReadWriteOnce
+  resources:
+    requests:
+      storage: 200Gi
+
+  dataSource:
+    name: stable-diffusion-data
+    kind: PersistentVolumeClaim

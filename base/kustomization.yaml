@@ -1,0 +1,5 @@
+
+resources:
+- data-pvc.yaml
+- ui.yaml
+- webports.yaml
