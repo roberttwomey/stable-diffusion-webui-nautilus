@@ -4,7 +4,11 @@
 # names=("hank" "luke" "micah" "alex" "hannah" "marley" "jaevyn" "olli" 
 # "kylie" "michael" "jordan" "owen" "angelia")
 
-names=("hank" "luke")
+# names=("hank" "luke")
+
+names=("micah" "alex" "hannah" "jaevyn" "olli" 
+"kylie" "michael" "jordan" "owen" "angelia")
+
 
 # Loop through each hackteam directory and apply the Kustomization
 for team_dir in ${names[@]}; do

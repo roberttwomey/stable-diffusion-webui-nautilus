@@ -62,6 +62,7 @@ spec:
             memory: 32Gi
             cpu: 10
             nvidia.com/gpu: 1
+            ephemeral-storage: 10G
           requests:
             memory: 32Gi
             cpu: 10
