@@ -1,0 +1,49 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+
+resources:
+- ../base
+
+# Name prefix for all resources
+# Name it after the user
+namePrefix: kylie-
+
+# Modify the HTTP URL to the webui
+patches:
+- target:
+    group: networking.k8s.io
+    version: v1
+    kind: Ingress
+    name: stable-diffusion-ui
+
+  # In this patch, change the example to whatever web address you want
+  patch: |-
+    - op: replace
+      path: /spec/rules/0/host
+      value: kylie-stable-diffusion.nrp-nautilus.io
+    - op: replace
+      path: /spec/tls/0/hosts/0
+      value: kylie-stable-diffusion.nrp-nautilus.io
+
+
+# Do not need to modify below this.
+# This replacement changes the selector "app" label to match
+# name, which includes the namePrefix
+replacements:
+  - source:
+      version: v1
+      kind: Service
+      name: stable-diffusion-ui
+      fieldPath: metadata.name
+    targets:
+      - select:
+          kind: Service
+          name: stable-diffusion-ui
+        fieldPaths:
+          - spec.selector.app
+      - select:
+          kind: Deployment
+          name: stable-diffusion-ui
+        fieldPaths:
+          - spec.template.metadata.labels.app
+          - spec.selector.matchLabels.app
